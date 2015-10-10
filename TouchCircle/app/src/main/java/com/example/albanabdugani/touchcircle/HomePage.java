@@ -1,0 +1,20 @@
+package com.example.albanabdugani.touchcircle;
+
+import android.app.Activity;
+import android.content.pm.ActivityInfo;
+import android.os.Bundle;
+
+/**
+ * Created by Alban on 10/10/2015.
+ */
+public class HomePage extends Activity {
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.homepage_layout);
+
+        // I lock the screen orientation in portrait mode
+        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+    }
+}
