@@ -4,4 +4,8 @@
     <string name="hello_world">Hello world!</string>
     <string name="action_settings">Settings</string>
     <string name="Title_TouchCircle">TouchCircle</string>
+    <string name="Classic_mode">Classic</string>
+    <string name="Time_mode">Time</string>
+    <string name="Classic_rule">Classic Mode : The aim is to touch the more circles as you can successively</string>
+    <string name="Time_rule">Time Mode : The aim is to touch the more circles as you can during a given time</string>
 </resources>

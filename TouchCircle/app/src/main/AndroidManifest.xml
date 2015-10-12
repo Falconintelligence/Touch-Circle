@@ -17,6 +17,10 @@
             </intent-filter>
         </activity>
         <activity android:name=".HomePage" android:label="Home Page" android:parentActivityName=".MainActivity"/>
+        <activity android:name=".GameChoice" android:label="Game mode" android:parentActivityName=".HomePage"/>
+        <activity android:name=".Help" android:label="Help" android:parentActivityName=".HomePage"/>
+        <activity android:name=".Scores" android:label="Scores" android:parentActivityName=".HomePage"/>
+        <activity android:name=".Settings" android:label="Settings" android:parentActivityName=".HomePage"/>
     </application>
 
 </manifest>

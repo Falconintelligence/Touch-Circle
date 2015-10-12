@@ -1,63 +1,71 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#000354"
-    android:orientation="vertical">
+    android:background="#000354">
 
     <TextView
+        android:id="@+id/title_Homepage"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/Title_TouchCircle"
-        android:textSize="30sp"
-        android:layout_gravity="center"
-        android:layout_marginTop="30dp"
+        android:textSize="50sp"
         android:textColor="#ff9b02"
-        android:textStyle="italic" />
+        android:textStyle="italic"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="20dp" />
 
     <ImageButton
         android:id="@+id/IB_Play"
-        android:layout_width="70dp"
-        android:layout_height="70dp"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
         android:background="@drawable/circle_button"
         android:src="@drawable/play"
         android:clickable="true"
-        android:layout_gravity="center"
-        android:layout_marginTop="70dp"
+        android:layout_centerHorizontal="true"
+        android:layout_centerVertical="true"
         android:scaleType="fitXY"
-        android:paddingTop="15dp"
-        android:paddingLeft="20dp"
-        android:paddingBottom="15dp"
-        android:paddingRight="10dp" />
+        android:paddingTop="17dp"
+        android:paddingStart="22dp"
+        android:paddingBottom="17dp"
+        android:paddingEnd="12dp" />
 
-    <LinearLayout
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content">
+    <ImageButton
+        android:id="@+id/IB_help"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:background="@drawable/circle_button"
+        android:src="@drawable/question"
+        android:clickable="true"
+        android:layout_marginStart="20dp"
+        android:layout_marginBottom="20dp"
+        android:layout_alignParentEnd="false"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentBottom="true" />
 
-        <ImageButton
-            android:layout_width="50dp"
-            android:layout_height="50dp"
-            android:background="@drawable/circle_button"
-            android:clickable="true"
-            android:layout_marginTop="30dp"
-            android:layout_marginStart="20dp"/>
+    <ImageButton
+        android:id="@+id/IB_scores"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:background="@drawable/circle_button"
+        android:src="@drawable/rank"
+        android:clickable="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="20dp"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentEnd="false" />
 
-        <ImageButton
-            android:layout_width="50dp"
-            android:layout_height="50dp"
-            android:background="@drawable/circle_button"
-            android:clickable="true"
-            android:layout_marginTop="30dp"
-            android:layout_marginStart="95dp"/>
+    <ImageButton
+        android:id="@+id/IB_settings"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:background="@drawable/circle_button"
+        android:src="@drawable/settings"
+        android:clickable="true"
+        android:layout_marginBottom="20dp"
+        android:layout_marginEnd="20dp"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentEnd="true" />
 
-        <ImageButton
-            android:layout_width="50dp"
-            android:layout_height="50dp"
-            android:background="@drawable/circle_button"
-            android:clickable="true"
-            android:layout_marginTop="30dp"
-            android:layout_marginStart="90dp"/>
 
-    </LinearLayout>
-
-</LinearLayout>
+</RelativeLayout>
