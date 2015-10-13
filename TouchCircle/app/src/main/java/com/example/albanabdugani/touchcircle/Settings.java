@@ -35,5 +35,13 @@ public class Settings extends Activity {
                 }
             }
         });
+
+        ImageButton IBback = (ImageButton)findViewById(R.id.IB_back_settings);
+        IBback.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
+            }
+        });
     }
 }
