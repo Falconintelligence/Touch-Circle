@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent" android:layout_height="match_parent"
+    android:background="#000354">
+
+    <!-- SETTINGS Title -->
+    <TextView
+        android:id="@+id/title_settings"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Settings"
+        android:textSize="35sp"
+        android:textColor="#ff9b02"
+        android:textStyle="italic"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="15dp" />
+
+    <!-- Row for the sound-->
+    <LinearLayout
+        android:id="@+id/soundLL"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:gravity="center"
+        android:layout_below="@id/title_settings"
+        android:layout_marginTop="20dp">
+
+        <ImageButton
+            android:id="@+id/IB_sound"
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:background="@drawable/circle_button"
+            android:src="@drawable/sound"
+            android:clickable="true"
+            android:scaleType="fitXY"
+            android:paddingTop="20dp"
+            android:paddingEnd="20dp"
+            android:paddingBottom="20dp"
+            android:paddingStart="15dp"
+            android:layout_marginEnd="40dp"/>
+
+        <TextView
+            android:id="@+id/TVsound"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="#FFFFFF"
+            android:textSize="30sp"
+            android:textStyle="italic"
+            android:text="ON" />
+
+    </LinearLayout>
+
+    <!-- Row for the difficulty title-->
+    <TextView
+        android:id="@+id/difficultyTV"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/difficulty_level"
+        android:layout_below="@id/soundLL"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="30dp"
+        android:textSize="20sp"
+        android:textColor="#FFFFFF"/>
+
+    <!-- Row for the difficulty levels-->
+    <LinearLayout
+        android:id="@+id/levelLL"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_centerHorizontal="true"
+        android:gravity="center"
+        android:layout_below="@id/difficultyTV"
+        android:layout_marginTop="20dp">
+
+        <!-- Low level -->
+        <Button
+            android:id="@+id/IB_low_mode"
+            android:layout_width="70dp"
+            android:layout_height="70dp"
+            android:background="@drawable/circle_button"
+            android:text="@string/low_level"
+            android:textSize="15sp"
+            android:textColor="#FFFFFF"
+            android:clickable="true"
+            android:layout_gravity="center"
+            android:gravity="center"
+            android:layout_marginEnd="35dp"/>
+
+        <!-- Medium level -->
+        <Button
+            android:id="@+id/IB_medium_mode"
+            android:layout_width="70dp"
+            android:layout_height="70dp"
+            android:background="@drawable/circle_button"
+            android:text="@string/medium_level"
+            android:textSize="15sp"
+            android:textColor="#FFFFFF"
+            android:clickable="true"
+            android:layout_gravity="center"
+            android:gravity="center"
+            android:layout_marginEnd="35dp"/>
+
+        <!-- High level-->
+        <Button
+            android:id="@+id/IB_high_mode"
+            android:layout_width="70dp"
+            android:layout_height="70dp"
+            android:background="@drawable/circle_button"
+            android:text="@string/high_level"
+            android:textSize="15sp"
+            android:textColor="#FFFFFF"
+            android:clickable="true"
+            android:layout_gravity="center"
+            android:gravity="center"/>
+
+    </LinearLayout>
+
+    <!-- Back Button -->
+    <ImageButton
+        android:id="@+id/IB_back_settings"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:background="@drawable/circle_button"
+        android:src="@drawable/back_arrow"
+        android:clickable="true"
+        android:layout_marginStart="20dp"
+        android:layout_marginBottom="20dp"
+        android:layout_alignParentEnd="false"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentBottom="true" />
+
+</RelativeLayout>

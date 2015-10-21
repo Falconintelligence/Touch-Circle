@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#000354">
+
+    <!-- SCORES Title-->
+    <TextView
+        android:id="@+id/title_scores"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/Title_TouchCircle"
+        android:textSize="50sp"
+        android:textColor="#ff9b02"
+        android:textStyle="italic"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="20dp" />
+
+    <!-- Back Button-->
+    <ImageButton
+        android:id="@+id/IB_back_scores"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:background="@drawable/circle_button"
+        android:src="@drawable/back_arrow"
+        android:clickable="true"
+        android:layout_marginStart="20dp"
+        android:layout_marginBottom="20dp"
+        android:layout_alignParentEnd="false"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentBottom="true" />
+
+</RelativeLayout>

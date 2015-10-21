@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.touchcircle.game.android"
+    android:versionCode="1"
+    android:versionName="1.0" >
+
+    <application
+        android:allowBackup="true"
+        android:icon="@mipmap/logo"
+        android:label="@string/app_name"
+        android:theme="@style/GdxTheme" >
+        <activity
+            android:name="com.touchcircle.game.android.MainActivity"
+            android:label="@string/app_name" 
+            android:screenOrientation="landscape"
+            android:configChanges="keyboard|keyboardHidden|orientation|screenSize">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+        <activity
+            android:name=".HomePage"
+            android:label="Home Page"
+            android:parentActivityName=".MainActivity" />
+        <activity
+            android:name=".GameChoice"
+            android:label="Game mode"
+            android:parentActivityName=".HomePage" />
+        <activity
+            android:name=".Help"
+            android:label="Help"
+            android:parentActivityName=".HomePage" />
+        <activity
+            android:name=".Scores"
+            android:label="Scores"
+            android:parentActivityName=".HomePage" />
+        <activity
+            android:name=".Settings"
+            android:label="Settings"
+            android:parentActivityName=".HomePage" />
+        <activity
+            android:name=".AndroidLauncher"
+            android:label="Launcher"
+            android:parentActivityName=".GameChoice"
+            android:screenOrientation="landscape"/>
+
+    </application>
+
+</manifest>
