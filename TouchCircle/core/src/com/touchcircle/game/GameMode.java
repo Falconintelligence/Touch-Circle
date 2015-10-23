@@ -9,6 +9,7 @@ import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.badlogic.gdx.math.Circle;
 
 
 public class GameMode extends ApplicationAdapter implements InputProcessor {
@@ -24,6 +25,7 @@ public class GameMode extends ApplicationAdapter implements InputProcessor {
 	int maxSize = 150;
 	int randomColor;
 	Color[] colorList;
+	Circle circleBounds;
 	
 	@Override
 	public void create () {
@@ -37,13 +39,14 @@ public class GameMode extends ApplicationAdapter implements InputProcessor {
 				Color.MAGENTA
 		};
 
+		// We choose the color of the first circle randomly
 		randomColor = (int) (colorList.length * Math.random());
-		System.out.println("randomColor = " + randomColor);
+		//System.out.println("randomColor = " + randomColor);
 
 		// We create the first circle
-		//Circle FirstCircle = new Circle();
-		shapeRenderer = new ShapeRenderer();
-		shapeRenderer.setColor(colorList[randomColor]);
+		circleBounds = new Circle();					// New bounds for the circle
+		shapeRenderer = new ShapeRenderer();			// New shapeRenderer
+		shapeRenderer.setColor(colorList[randomColor]);	// Color of the first circle
 
 		// We fetch the size of the screen
 		height = Gdx.graphics.getHeight();
@@ -55,8 +58,11 @@ public class GameMode extends ApplicationAdapter implements InputProcessor {
 		// We assign a random value to the position of the circle inside the screen
 		x = (int) (radius + ( (width - radius) * Math.random() ) );
 		y = (int) (radius + ( (height - radius) * Math.random() ) );
-		System.out.println("x : " + x + "  y : " + y);
+		// We set the bounds of the circle and its center
+		circleBounds.set(x, y, radius);
+		//System.out.println("x : " + x + "  y : " + y);
 
+		// We allow the screen to listen the finger of the user
 		Gdx.input.setInputProcessor(this);
 	}
 
@@ -68,7 +74,7 @@ public class GameMode extends ApplicationAdapter implements InputProcessor {
 
 		// We display the circle
 		shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
-		shapeRenderer.circle(x, y, radius);
+		shapeRenderer.circle(x, (height-y), radius);
 		shapeRenderer.end();
 	}
 
@@ -91,18 +97,27 @@ public class GameMode extends ApplicationAdapter implements InputProcessor {
 
 	@Override
 	public boolean touchDown(int screenX, int screenY, int pointer, int button) {
+
+		// We fetch the position of the finger
 		touchCoordinateX = screenX;
 		touchCoordinateY = screenY;
-		System.out.println("X coordinate : " + touchCoordinateX + " Y coordinate : " + touchCoordinateY);
+		//System.out.println("X coordinate : " + touchCoordinateX + " Y coordinate : " + touchCoordinateY);
 
-		radius = (int) (minSize + (maxSize - minSize) * Math.random());
-		// We assign a random value to the position of the circle inside the screen
-		x = (int) (radius + ( (width - radius - edge) * Math.random() ) );
-		y = (int) (radius + ( (height - radius - edge) * Math.random() ) );
+		// If the finger touch the circle we create a new circle
+		if (circleBounds.contains(touchCoordinateX, touchCoordinateY)) {
+			// New size of the circle
+			radius = (int) (minSize + (maxSize - minSize) * Math.random());
+			// We assign a random value to the position of the new circle inside the screen
+			x = (int) (radius + ((width - radius - edge) * Math.random()) );
+			y = (int) (radius + ((height - radius - edge) * Math.random() ) );
+			// New bounds of the circle and its center
+			circleBounds.set(x, y, radius);
+			//System.out.println("x : " + x + "  y : " + y);
 
-		// We change the color of the circle
-		randomColor = (int) (colorList.length * Math.random());
-		shapeRenderer.setColor(colorList[randomColor]);
+			// We change the color of the circle
+			randomColor = (int) (colorList.length * Math.random());
+			shapeRenderer.setColor(colorList[randomColor]);
+		}
 		return false;
 	}
 
