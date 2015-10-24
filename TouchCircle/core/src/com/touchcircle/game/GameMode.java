@@ -16,16 +16,18 @@ public class GameMode extends ApplicationAdapter implements InputProcessor {
 	ShapeRenderer shapeRenderer;
 	int height;
 	int width;
-	int touchCoordinateX;
-	int touchCoordinateY;
+	int touchCoordinateX, touchCoordinateY;
 	int x,y;
 	int radius;
 	int edge = 200;
 	int minSize = 50;
 	int maxSize = 150;
 	int randomColor;
-	Color[] colorList;
-	Circle circleBounds;
+	int touchBonus;
+	boolean bonus = false;
+	Color[] colorList, RdmColorList;
+	Circle[] circleBounds;
+	int[] Xcoordinates, Ycoordinates, Radius;
 	
 	@Override
 	public void create () {
@@ -34,17 +36,23 @@ public class GameMode extends ApplicationAdapter implements InputProcessor {
 				Color.CYAN,
 				Color.GREEN,
 				Color.RED,
-				Color.WHITE,
-				Color.YELLOW,
-				Color.MAGENTA
+				Color.MAGENTA,
+				Color.YELLOW
 		};
+
+		Xcoordinates = new int[5];
+		Ycoordinates = new int[5];
+		Radius = new int[5];
+		RdmColorList = new Color[5];
+		for (int j=0; j<RdmColorList.length; j++) RdmColorList[j]= new Color();
+		circleBounds = new Circle[5];					// New bounds for the circle
+		for (int i=0; i<circleBounds.length; i++) circleBounds[i]= new Circle();
 
 		// We choose the color of the first circle randomly
 		randomColor = (int) (colorList.length * Math.random());
 		//System.out.println("randomColor = " + randomColor);
 
-		// We create the first circle
-		circleBounds = new Circle();					// New bounds for the circle
+		// New renderer to display the elements on the screen
 		shapeRenderer = new ShapeRenderer();			// New shapeRenderer
 		shapeRenderer.setColor(colorList[randomColor]);	// Color of the first circle
 
@@ -59,7 +67,7 @@ public class GameMode extends ApplicationAdapter implements InputProcessor {
 		x = (int) (radius + ( (width - radius) * Math.random() ) );
 		y = (int) (radius + ( (height - radius) * Math.random() ) );
 		// We set the bounds of the circle and its center
-		circleBounds.set(x, y, radius);
+		circleBounds[0].set(x, y, radius);
 		//System.out.println("x : " + x + "  y : " + y);
 
 		// We allow the screen to listen the finger of the user
@@ -72,10 +80,22 @@ public class GameMode extends ApplicationAdapter implements InputProcessor {
 		Gdx.gl.glClearColor(0.040f, 0.098f, 0.350f, 1);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
-		// We display the circle
-		shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
-		shapeRenderer.circle(x, (height-y), radius);
-		shapeRenderer.end();
+		if (bonus){
+			shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
+			// We draw each circle with its color
+			for (int i=0; i<Xcoordinates.length; i++) {
+				shapeRenderer.setColor(RdmColorList[i]);
+				shapeRenderer.circle(Xcoordinates[i], (height - Ycoordinates[i]), Radius[i]);
+			}
+			shapeRenderer.end();
+		}
+		else {
+			// We display the circle
+			shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
+			shapeRenderer.circle(x, (height - y), radius);
+			shapeRenderer.end();
+
+		}
 	}
 
 	// When the user touch the screen
@@ -103,20 +123,56 @@ public class GameMode extends ApplicationAdapter implements InputProcessor {
 		touchCoordinateY = screenY;
 		//System.out.println("X coordinate : " + touchCoordinateX + " Y coordinate : " + touchCoordinateY);
 
-		// If the finger touch the circle we create a new circle
-		if (circleBounds.contains(touchCoordinateX, touchCoordinateY)) {
-			// New size of the circle
-			radius = (int) (minSize + (maxSize - minSize) * Math.random());
-			// We assign a random value to the position of the new circle inside the screen
-			x = (int) (radius + ((width - radius - edge) * Math.random()) );
-			y = (int) (radius + ((height - radius - edge) * Math.random() ) );
-			// New bounds of the circle and its center
-			circleBounds.set(x, y, radius);
-			//System.out.println("x : " + x + "  y : " + y);
+		// We check if the player touched one of the circles displayed
+		for (int k=0; k<circleBounds.length; k++) {
+			// If the finger touch a circle we create a new circle
+			if (circleBounds[k].contains(touchCoordinateX, touchCoordinateY)) {
+				touchBonus++;
+				// If the circle was a bonus (White circle)
+				//if (shapeRenderer.getColor() == Color.WHITE){
+				if (touchBonus == 11) {
+					System.out.println("BONUS");
+					bonus = true;
+					// We display 5 others circles at the same time
+					for (int i = 0; i < Xcoordinates.length; i++) {
+						// We assign a random value to the position of each new circle inside the screen
+						Xcoordinates[i] = (int) (radius + ((width - radius - edge) * Math.random()));
+						Ycoordinates[i] = (int) (radius + ((height - radius - edge) * Math.random()));
+						// New size for each circle
+						Radius[i] = (int) (minSize + (maxSize - minSize) * Math.random());
+						// New bounds for each new circle and its center
+						circleBounds[i].set(Xcoordinates[i], Ycoordinates[i], Radius[i]);
+						// New color for each circle
+						randomColor = (int) (colorList.length * Math.random());
+						RdmColorList[i] = colorList[randomColor];
+					}
+					touchBonus = 0;
+				}
+				// If the circle was not a bonus
+				else {
+					bonus = false;
+					// New size of the circle
+					radius = (int) (minSize + (maxSize - minSize) * Math.random());
+					// We assign a random value to the position of the new circle inside the screen
+					x = (int) (radius + ((width - radius - edge) * Math.random()));
+					y = (int) (radius + ((height - radius - edge) * Math.random()));
+					// New bounds of the circle and its center
+					circleBounds[0].set(x, y, radius);
+					//System.out.println("x : " + x + "  y : " + y);
 
-			// We change the color of the circle
-			randomColor = (int) (colorList.length * Math.random());
-			shapeRenderer.setColor(colorList[randomColor]);
+					// We change the color of the circle
+					// If the player touched 12 times a circle, we display a Bonus (white circle)
+					if (touchBonus == 10) {
+						shapeRenderer.setColor(Color.WHITE);
+					}
+					// else we display a circle with one color of the list
+					else {
+						randomColor = (int) (colorList.length * Math.random());
+						shapeRenderer.setColor(colorList[randomColor]);
+					}
+					System.out.println("RANDOM");
+				}
+			}
 		}
 		return false;
 	}
