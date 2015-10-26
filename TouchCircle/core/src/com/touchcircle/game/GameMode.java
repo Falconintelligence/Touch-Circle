@@ -1,15 +1,17 @@
 package com.touchcircle.game;
 
-import com.badlogic.gdx.Application;
 import com.badlogic.gdx.ApplicationAdapter;
-import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputProcessor;
-import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.audio.Music;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Circle;
+import com.badlogic.gdx.utils.TimeUtils;
 
 
 public class GameMode extends ApplicationAdapter implements InputProcessor {
@@ -21,15 +23,24 @@ public class GameMode extends ApplicationAdapter implements InputProcessor {
 	int minSize = 50;
 	int maxSize = 150;
 	int randomColor;
+	int CircleNumber = 5;
 	int touchBonus = 0, touch = 0;
 	boolean bonus = false;
 	boolean whiteBonus = false;
 	Color[] colorList, RdmColorList;
 	Circle[] circleBounds;
 	int[] Xcoordinates, Ycoordinates, Radius;
+	Sound pop;
+	BitmapFont shadow, font;
+	SpriteBatch batch;
+	int score = 0;
+	long startTime;
 	
 	@Override
 	public void create () {
+
+		batch = new SpriteBatch();
+		startTime = TimeUtils.millis();
 
 		colorList = new Color[]{
 				Color.CYAN,
@@ -38,13 +49,20 @@ public class GameMode extends ApplicationAdapter implements InputProcessor {
 				Color.MAGENTA,
 				Color.YELLOW
 		};
+		// We load our sound effect
+		pop = Gdx.audio.newSound(Gdx.files.internal("pop.mp3"));
 
-		Xcoordinates = new int[5];
-		Ycoordinates = new int[5];
-		Radius = new int[5];
-		RdmColorList = new Color[5];
+		font = new BitmapFont(Gdx.files.internal("data/text.fnt"));
+		//font.setScale(.25f, -.25f);
+		shadow = new BitmapFont(Gdx.files.internal("data/shadow.fnt"));
+		//shadow.setScale(.25f, -.25f);
+
+		Xcoordinates = new int[CircleNumber];
+		Ycoordinates = new int[CircleNumber];
+		Radius = new int[CircleNumber];
+		RdmColorList = new Color[CircleNumber];
 		for (int j=0; j<RdmColorList.length; j++) RdmColorList[j]= new Color();
-		circleBounds = new Circle[5];					// New bounds for the circle
+		circleBounds = new Circle[CircleNumber];					// New bounds for the circle
 		for (int i=0; i<circleBounds.length; i++) circleBounds[i]= new Circle();
 
 		// We choose the color of the first circle randomly
@@ -78,6 +96,18 @@ public class GameMode extends ApplicationAdapter implements InputProcessor {
 		Gdx.gl.glClearColor(0.040f, 0.098f, 0.350f, 1);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
+		int time = (int) (TimeUtils.timeSinceMillis(startTime) / 1000);
+
+		batch.begin();
+		font.draw(batch, "Score: " + score, (width - 400), (height - 25));
+		font.setColor(Color.CORAL);
+		if (time < 60 )
+			if (time < 10)
+				font.draw(batch, "0:0"+String.valueOf(time) , 50, (height - 25));
+			else font.draw(batch, "0:"+String.valueOf(time) , 50, (height - 25));
+		else font.draw(batch, "1:00", 50, (height - 25));
+		batch.end();
+
 		shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
 		// We draw each circle with its color
 		for (int i=0; i<Xcoordinates.length; i++) {
@@ -86,6 +116,15 @@ public class GameMode extends ApplicationAdapter implements InputProcessor {
 		}
 		shapeRenderer.end();
 
+		// If it is a white circle, we add a outline
+		if (whiteBonus){
+			//Thickness of the bounds
+			Gdx.gl.glLineWidth(25);
+			shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
+			shapeRenderer.setColor(Color.YELLOW);
+			shapeRenderer.circle(Xcoordinates[0], (height - Ycoordinates[0]), Radius[0]+2);
+			shapeRenderer.end();
+		}
 	}
 
 	// When the user touch the screen
@@ -118,9 +157,13 @@ public class GameMode extends ApplicationAdapter implements InputProcessor {
 			// If the finger touch a circle we create a new circle
 			if (circleBounds[k].contains(touchCoordinateX, touchCoordinateY)) {
 				touchBonus++;
+				// we play a sound effect
+				pop.play(1.0f);
+
 				// If the circle was a bonus (White circle)
 				if (whiteBonus) {
-					//bonus = true;
+					// We increase the score by 5 because it's a bonus
+					score += 5;
 					System.out.println("BONUS");
 					// We display 5 others circles at the same time
 					for (int i = 0; i < Xcoordinates.length; i++) {
@@ -141,6 +184,8 @@ public class GameMode extends ApplicationAdapter implements InputProcessor {
 				}
 				// If the circle was not a bonus
 				else {
+					// We increase the score
+					score += 1;
 					// We cannot change the color of the first circle until all the circles were destroyed
 					bonus = false;
 					// We remove the circle
@@ -156,7 +201,7 @@ public class GameMode extends ApplicationAdapter implements InputProcessor {
 							//System.out.println(touch);
 						}
 					}
-					if (touch == 5){
+					if (touch == CircleNumber){
 						// We say that we can change the color of the first circle now
 						bonus = true;
 						// New size of the circle
