@@ -53,9 +53,7 @@ public class GameMode extends ApplicationAdapter implements InputProcessor {
 		pop = Gdx.audio.newSound(Gdx.files.internal("pop.mp3"));
 
 		font = new BitmapFont(Gdx.files.internal("data/text.fnt"));
-		//font.setScale(.25f, -.25f);
-		shadow = new BitmapFont(Gdx.files.internal("data/shadow.fnt"));
-		//shadow.setScale(.25f, -.25f);
+		//shadow = new BitmapFont(Gdx.files.internal("data/shadow.fnt"));
 
 		Xcoordinates = new int[CircleNumber];
 		Ycoordinates = new int[CircleNumber];
@@ -93,37 +91,63 @@ public class GameMode extends ApplicationAdapter implements InputProcessor {
 	@Override
 	public void render () {
 		// Color of the background Dark blue
-		Gdx.gl.glClearColor(0.040f, 0.098f, 0.350f, 1);
+		//Gdx.gl.glClearColor(0.040f, 0.098f, 0.350f, 1);
+		// Color of the background dark
+		Gdx.gl.glClearColor(0.07f, 0.07f, 0.07f, 1);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
+		// We fetch the time since the user start the game
 		int time = (int) (TimeUtils.timeSinceMillis(startTime) / 1000);
 
 		batch.begin();
-		font.draw(batch, "Score: " + score, (width - 400), (height - 25));
-		font.setColor(Color.CORAL);
+		font.setColor(Color.ORANGE);
+		font.getData().setScale(1.15f, 1.15f);
+		// We choose a color for the text
+		font.setColor(Color.ORANGE);
+		// We display the score
+		font.draw(batch, "Score: " + score, 50, (height - 25));
+		// We display the time with this format 0:00 and we stop at 1:00 minute
 		if (time < 60 )
 			if (time < 10)
-				font.draw(batch, "0:0"+String.valueOf(time) , 50, (height - 25));
-			else font.draw(batch, "0:"+String.valueOf(time) , 50, (height - 25));
-		else font.draw(batch, "1:00", 50, (height - 25));
+				font.draw(batch, "0:0"+String.valueOf(time) ,(width - 200), (height - 25));
+			else font.draw(batch, "0:"+String.valueOf(time) ,(width - 200), (height - 25));
+		else {
+			font.draw(batch, "1:00", (width - 200), (height - 25));
+			font.draw(batch, "Score: " + score, 50, (height - 25));
+		}
 		batch.end();
 
-		shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
-		// We draw each circle with its color
-		for (int i=0; i<Xcoordinates.length; i++) {
-			shapeRenderer.setColor(RdmColorList[i]);
-			shapeRenderer.circle(Xcoordinates[i], (height - Ycoordinates[i]), Radius[i]);
-		}
-		shapeRenderer.end();
+		if (time < 60) {
 
-		// If it is a white circle, we add a outline
-		if (whiteBonus){
-			//Thickness of the bounds
-			Gdx.gl.glLineWidth(25);
-			shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
-			shapeRenderer.setColor(Color.YELLOW);
-			shapeRenderer.circle(Xcoordinates[0], (height - Ycoordinates[0]), Radius[0]+2);
+			shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
+			// We draw each circle with its color
+			for (int i = 0; i < Xcoordinates.length; i++) {
+				shapeRenderer.setColor(RdmColorList[i]);
+				shapeRenderer.circle(Xcoordinates[i], (height - Ycoordinates[i]), Radius[i]);
+			}
 			shapeRenderer.end();
+
+			// If it is a white circle, we add a outline
+			if (whiteBonus) {
+				//Thickness of the bounds
+				Gdx.gl.glLineWidth(25);
+				shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
+				shapeRenderer.setColor(Color.YELLOW);
+				shapeRenderer.circle(Xcoordinates[0], (height - Ycoordinates[0]), Radius[0] + 2);
+				shapeRenderer.end();
+			}
+		}
+		else {
+			// We disable the fact that we can click on the circles
+			for (int i = 0; i < Xcoordinates.length; i++) {
+				circleBounds[i]= new Circle();
+			}
+			// We display a game over with the final score (for the moment)
+			batch.begin();
+			font.getData().setScale(1.5f, 1.5f);
+			font.setColor(Color.WHITE);
+			font.draw(batch, "Game Over !\n Score: " + score, (width / 2 - 300), (height / 2 + 200));
+			batch.end();
 		}
 	}
 
@@ -255,5 +279,13 @@ public class GameMode extends ApplicationAdapter implements InputProcessor {
 	@Override
 	public boolean scrolled(int amount) {
 		return false;
+	}
+
+	@Override
+	public void dispose(){
+		pop.dispose();
+		shapeRenderer.dispose();
+		batch.dispose();
+		font.dispose();
 	}
 }
