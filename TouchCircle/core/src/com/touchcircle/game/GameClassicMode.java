@@ -13,6 +13,9 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Circle;
 import com.badlogic.gdx.utils.TimeUtils;
 
+import java.util.Timer;
+import java.util.TimerTask;
+
 /**
  * Created by Alban on 26/10/2015.
  */
@@ -41,15 +44,17 @@ public class GameClassicMode extends ApplicationAdapter implements InputProcesso
     long startTime;									// Start time of the game
     int minutes = 0;                                // Number of minutes since the game started
     static boolean displayNewCircle = true;         // Boolean which display a circle or not during a while
-    long apparitionTime = 2500;                     // Time where we can see the circle
-    long invisibleTime = 1000;                      // Time where we can't see a circle
+    static long apparitionTime = 1500;              // Time where we can see the circle
+    static long invisibleTime = 300;                // Time where we can't see a circle
     static Thread myThread;                         // Thread for removing or displaying circle
     public static boolean running = true;           // Boolean indicating if the game is playing
     static int missedCircle = 0;                    // Number of circles missed
     int time = 0;                                   // Time since the game has started
     static int endTime = 3;                         // End time of the game
+    static TimerTask myTimerTask;                   // Task which decrease the apparition time during the game
+    static Timer timer;
 
-    static int Difficulty = 3;                      // Difficulty of the game (1=easy, 2=normal, 3=hard)
+    static int Difficulty = 2;                      // Difficulty of the game (1=easy, 2=normal, 3=hard)
 
     @Override
     public void create () {
@@ -108,6 +113,20 @@ public class GameClassicMode extends ApplicationAdapter implements InputProcesso
         myThread = new Thread(new GameClassicMode());
         myThread.setDaemon(true);
         myThread.start();
+
+        // Timer for the TimerTask
+        timer = new Timer();
+        // TimerTask which decrease the apparitionTime of the circles
+        myTimerTask = new TimerTask() {
+            public void run() {
+                if (apparitionTime > 300)
+                    apparitionTime -= 50;           // We decrease the time of 50 msec
+                else apparitionTime = 300;          // 300 msec is the minimum time of apparition
+                System.out.println(apparitionTime);
+            }
+        };
+        // The timer will execute our TimerTask each 5 sec
+        timer.scheduleAtFixedRate(myTimerTask,0, 5000);
 
         background_music.play();
         background_music.setLooping(true);
@@ -204,6 +223,7 @@ public class GameClassicMode extends ApplicationAdapter implements InputProcesso
         try {
             while (running && minutes<endTime) {
                 // We wait during apparitionTime before removing the circles
+                System.out.println("APPARITION : "+apparitionTime);
                 Thread.sleep(apparitionTime);
                 displayNewCircle = false;
 
@@ -413,6 +433,8 @@ public class GameClassicMode extends ApplicationAdapter implements InputProcesso
         shapeRenderer.dispose();
         batch.dispose();
         font.dispose();
+        timer = new Timer();
+        myTimerTask.cancel();
         // We have to reset these value for the next time because they are static
         running = true;
         displayNewCircle = true;
@@ -420,5 +442,6 @@ public class GameClassicMode extends ApplicationAdapter implements InputProcesso
         whiteBonus = false;
         bonus = false;
         minutes = 0;
+        apparitionTime = 1500;
     }
 }
