@@ -49,6 +49,8 @@ public class GameClassicMode extends ApplicationAdapter implements InputProcesso
     int time = 0;                                   // Time since the game has started
     static int endTime = 3;                         // End time of the game
 
+    static int Difficulty = 3;                      // Difficulty of the game (1=easy, 2=normal, 3=hard)
+
     @Override
     public void create () {
 
@@ -70,7 +72,6 @@ public class GameClassicMode extends ApplicationAdapter implements InputProcesso
         background_music = Gdx.audio.newMusic(Gdx.files.internal("data/background_sound.wav"));
 
         font = new BitmapFont(Gdx.files.internal("data/text.fnt"));
-        //shadow = new BitmapFont(Gdx.files.internal("data/shadow.fnt"));
 
         // We instantiate all the lists
         Xcoordinates = new int[CircleNumber];
@@ -93,8 +94,11 @@ public class GameClassicMode extends ApplicationAdapter implements InputProcesso
         width = Gdx.graphics.getWidth();
         //System.out.println("height : " + height + "  width : " + width);
 
-        // Size of the first circle
-        Radius[0] = maxSize;
+        // If the difficulty is easy or normal, we start with a big Circle
+        if(Difficulty==1 || Difficulty==2)
+            Radius[0] = maxSize;			// Maximal size for the first circle
+        else if (Difficulty==3)
+            Radius[0] = minSize;			// Minimal size for the first circle
         // We assign a random value to the position of the circle inside the screen
         Xcoordinates[0] = (int) (minSize + edge + ( (width - maxSize - minSize - 2*edge + 100) * Math.random() ) );
         Ycoordinates[0] = (int) (minSize + edge + ( (height - maxSize - minSize - 2*edge + 100) * Math.random() ) );
@@ -163,6 +167,7 @@ public class GameClassicMode extends ApplicationAdapter implements InputProcesso
             if (whiteBonus) {
                 //Thickness of the bounds
                 Gdx.gl.glLineWidth(25);
+                // Bounds of the circle
                 circleBounds[0].set(Xcoordinates[0], Ycoordinates[0], Radius[0]);
                 shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
                 shapeRenderer.setColor(Color.YELLOW);
@@ -202,8 +207,16 @@ public class GameClassicMode extends ApplicationAdapter implements InputProcesso
                 Thread.sleep(apparitionTime);
                 displayNewCircle = false;
 
-                // We create another circle with different parameters
-                Radius[0] = (int) (minSize + (maxSize - minSize) * Math.random());
+                // If the difficulty is easy each circle must have the maximum size
+                if (Difficulty ==1)
+                    Radius[0] = maxSize;
+                    // If the difficulty is normal each circle have a random size
+                else if (Difficulty ==2)
+                    Radius[0] = (int) (minSize + (maxSize - minSize) * Math.random());
+                    // If the difficulty is hard each circle have the minimum size
+                else
+                    Radius[0] = minSize;
+
                 // We assign a random value to the position of the new circle inside the screen
                 Xcoordinates[0] = (int) (minSize + edge + ((width - maxSize - minSize - 2 * edge + 100) * Math.random()));
                 Ycoordinates[0] = (int) (minSize + edge + ((height - maxSize - minSize - 2 * edge + 100) * Math.random()));
@@ -278,8 +291,17 @@ public class GameClassicMode extends ApplicationAdapter implements InputProcesso
                     System.out.println("BONUS");
                     // We display 5 others circles at the same time
                     for (int i = 0; i < Xcoordinates.length; i++) {
-                        // New size for each circle
-                        Radius[i] = (int) (minSize + (maxSize - minSize) * Math.random());
+
+                        // If the difficulty is easy each circle must have the maximum size
+                        if (Difficulty ==1)
+                            Radius[i] = maxSize;
+                            // If the difficulty is normal each circle have a random size
+                        else if (Difficulty ==2)
+                            Radius[i] = (int) (minSize + (maxSize - minSize) * Math.random());
+                            // If the difficulty is hard each circle have the minimum size
+                        else
+                            Radius[i] = minSize;
+
                         // We assign a random value to the position of each new circle inside the screen
                         Xcoordinates[i] = (int) (minSize + edge + ((width - maxSize - minSize - 2*edge + 100) * Math.random()));
                         Ycoordinates[i] = (int) (minSize + edge + ((height - maxSize - minSize - 2*edge + 100) * Math.random()));
@@ -313,8 +335,17 @@ public class GameClassicMode extends ApplicationAdapter implements InputProcesso
                     if (touch == CircleNumber){
                         // We say that we can change the color of the first circle now
                         bonus = true;
-                        // New size of the circle
-                        Radius[0] = (int) (minSize + (maxSize - minSize) * Math.random());
+
+                        // If the difficulty is easy each circle must have the maximum size
+                        if (Difficulty ==1)
+                            Radius[0] = maxSize;
+                            // If the difficulty is normal each circle have a random size
+                        else if (Difficulty ==2)
+                            Radius[0] = (int) (minSize + (maxSize - minSize) * Math.random());
+                            // If the difficulty is hard each circle have the minimum size
+                        else
+                            Radius[0] = minSize;
+
                         // We assign a random value to the position of the new circle inside the screen
                         Xcoordinates[0] = (int) (minSize + edge + ((width - maxSize - minSize - 2 * edge + 100) * Math.random()));
                         Ycoordinates[0] = (int) (minSize + edge + ((height - maxSize - minSize - 2 * edge + 100) * Math.random()));

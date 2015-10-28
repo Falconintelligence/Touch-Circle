@@ -3,15 +3,25 @@ package com.touchcircle.game.android;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
+import android.content.res.AssetManager;
+import android.content.res.Resources;
 import android.os.Bundle;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.ImageButton;
 
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.assets.loaders.MusicLoader;
+import com.badlogic.gdx.audio.Music;
+import com.badlogic.gdx.files.FileHandle;
+
+import java.io.File;
+
 /**
  * Created by Alban on 10/10/2015.
  */
 public class HomePage extends Activity {
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

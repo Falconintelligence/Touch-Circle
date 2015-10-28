@@ -9,6 +9,7 @@ import android.widget.Button;
 import android.widget.ImageButton;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.audio.Music;
 
 /**
  * Created by Alban on 10/10/2015.

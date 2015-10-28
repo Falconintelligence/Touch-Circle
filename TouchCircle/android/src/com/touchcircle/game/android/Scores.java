@@ -6,6 +6,9 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.ImageButton;
 
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.audio.Music;
+
 /**
  * Created by Alban on 10/10/2015.
  */

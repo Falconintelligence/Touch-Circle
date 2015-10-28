@@ -13,29 +13,36 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Circle;
 import com.badlogic.gdx.utils.TimeUtils;
 
+import javax.swing.plaf.basic.BasicInternalFrameTitlePane;
 
-public class GameTimeMode extends ApplicationAdapter implements InputProcessor {
+
+public class GameTimeMode extends ApplicationAdapter implements InputProcessor, Runnable {
 	ShapeRenderer shapeRenderer;					// Give the possibility to draw elements on the screen
-	int height, width;								// Height and Width of the screen
+	static int height, width;						// Height and Width of the screen
 	int touchCoordinateX, touchCoordinateY;			// Position of the user's finger on the screen
-	int edge = 200;									// Edge to give bounds for the zone where we display circles
-	int minSize = 50;								// Minimum size of the circle
-	int maxSize = 150;								// Maximum size of the circle
-	int randomColor;								// Number of the random color
+	static int edge = 200;							// Edge to give bounds for the zone where we display circles
+	static int minSize = 50;						// Minimum size of the circle
+	static int maxSize = 150;						// Maximum size of the circle
+	static int randomColor;							// Number of the random color
 	int CircleNumber = 5;							// Number of circles to display when we touch the bonus
-	int touchBonus = 0;								// Number of time we touch the screen before displaying a bonus
-	int touch = 0;									// Number of circle touched after pressing the bonus circle
-	boolean bonus = false;							// Boolean which tells us if we have to press on circles displayed by the bonus circle in order to know when we have to change the color of the next circle
-	boolean whiteBonus = false;						// Boolean which tells us if it is a bonus circle or not
-	Color[] colorList, RdmColorList;				// List of the colors of the circles
-	Circle[] circleBounds;							// List of the bounds for the circle (to know if we click inside the circle)
-	int[] Xcoordinates, Ycoordinates, Radius;		// Parameters of the circles
+	static int touchBonus = 0;						// Number of time we touch the screen before displaying a bonus
+	static int touch = 0;							// Number of circle touched after pressing the bonus circle
+	static boolean bonus = false;					// Boolean which tells us if we have to press on circles displayed by the bonus circle in order to know when we have to change the color of the next circle
+	static boolean whiteBonus = false;				// Boolean which tells us if it is a bonus circle or not
+	static Color[] colorList, RdmColorList;			// List of the colors of the circles
+	static Circle[] circleBounds;					// List of the bounds for the circle (to know if we click inside the circle)
+	static int[] Xcoordinates, Ycoordinates, Radius;// Parameters of the circles
 	Music pop;										// Sound effect when we click on a circle
 	Music background_music;                         // Background music for the game
 	BitmapFont font;								// Font of the text
 	SpriteBatch batch;								// SpriteBatch to display the text
 	int score = 0;									// Value of the score
 	long startTime;									// Start time of the game
+	static Thread myThread;                         // Thread for removing the bonus circle
+	public static boolean running = true;           // Boolean indicating if the game is playing
+
+	// Variables for the difficulty of the game
+	static int Difficulty = 2;						// Difficulty of the game (1=easy, 2=normal, 3=hard)
 	
 	@Override
 	public void create () {
@@ -56,7 +63,6 @@ public class GameTimeMode extends ApplicationAdapter implements InputProcessor {
 		background_music = Gdx.audio.newMusic(Gdx.files.internal("data/background_sound.wav"));
 
 		font = new BitmapFont(Gdx.files.internal("data/text.fnt"));
-		//shadow = new BitmapFont(Gdx.files.internal("data/shadow.fnt"));
 
 		// We instantiate all the lists
 		Xcoordinates = new int[CircleNumber];
@@ -79,13 +85,20 @@ public class GameTimeMode extends ApplicationAdapter implements InputProcessor {
 		width = Gdx.graphics.getWidth();
 		//System.out.println("height : " + height + "  width : " + width);
 
-		// Size of the first circle
-		Radius[0] = maxSize;
+		// If the difficulty is easy or normal, we start with a big Circle
+		if(Difficulty==1 || Difficulty==2)
+			Radius[0] = maxSize;			// Maximal size for the first circle
+		else if (Difficulty==3)
+			Radius[0] = minSize;			// Minimal size for the first circle
 		// We assign a random value to the position of the circle inside the screen
 		Xcoordinates[0] = (int) (minSize + edge + ( (width - maxSize - minSize - 2*edge + 100) * Math.random() ) );
 		Ycoordinates[0] = (int) (minSize + edge + ( (height - maxSize - minSize - 2*edge + 100) * Math.random() ) );
 		// We set the bounds of the circle and its center
 		circleBounds[0].set(Xcoordinates[0], Ycoordinates[0], Radius[0]);
+
+		myThread = new Thread(new GameTimeMode());
+		myThread.setDaemon(true);
+		myThread.start();
 
 		// We play the background music in a loop
 		background_music.play();
@@ -107,6 +120,7 @@ public class GameTimeMode extends ApplicationAdapter implements InputProcessor {
 		int time = (int) (TimeUtils.timeSinceMillis(startTime) / 1000);
 
 		batch.begin();
+		// Size of the text
 		font.getData().setScale(1.15f, 1.15f);
 		// We choose a color for the text
 		font.setColor(Color.ORANGE);
@@ -159,6 +173,46 @@ public class GameTimeMode extends ApplicationAdapter implements InputProcessor {
 	}
 
 	@Override
+	public void run() {
+		while (running) {
+			if (whiteBonus) {
+				try {
+					// We let the bonus on the screen during a while
+					Thread.sleep(1000);
+
+					if (whiteBonus) {
+						// We create another circle
+						// If the difficulty is easy each circle must have the maximum size
+						if (Difficulty == 1)
+							Radius[0] = maxSize;
+							// If the difficulty is normal each circle have a random size
+						else if (Difficulty == 2)
+							Radius[0] = (int) (minSize + (maxSize - minSize) * Math.random());
+							// If the difficulty is hard each circle have the minimum size
+						else
+							Radius[0] = minSize;
+						// We change the color
+						if (bonus) {
+							randomColor = (int) (colorList.length * Math.random());
+							RdmColorList[0] = colorList[randomColor];
+						}
+						// We assign a random value to the position of the new circle inside the screen
+						Xcoordinates[0] = (int) (minSize + edge + ((width - maxSize - minSize - 2 * edge + 100) * Math.random()));
+						Ycoordinates[0] = (int) (minSize + edge + ((height - maxSize - minSize - 2 * edge + 100) * Math.random()));
+						// New bounds of the circle and its center
+						circleBounds[0].set(Xcoordinates[0], Ycoordinates[0], Radius[0]);
+
+						touchBonus = 0;
+						whiteBonus = false;
+					}
+				}catch(InterruptedException e){
+					e.printStackTrace();
+				}
+			}
+		}
+	}
+
+	@Override
 	public boolean keyDown(int keycode) {
 		return false;
 	}
@@ -194,22 +248,32 @@ public class GameTimeMode extends ApplicationAdapter implements InputProcessor {
 				if (whiteBonus) {
 					// We increase the score by 5 because it's a bonus
 					score += 5;
-					System.out.println("BONUS");
+
 					// We display 5 others circles at the same time
 					for (int i = 0; i < Xcoordinates.length; i++) {
-						// New size for each circle
-						Radius[i] = (int) (minSize + (maxSize - minSize) * Math.random());
+						// If the difficulty is easy each circle must have the maximum size
+						if (Difficulty ==1)
+							Radius[i] = maxSize;
+						// If the difficulty is normal each circle have a random size
+						else if (Difficulty ==2)
+							Radius[i] = (int) (minSize + (maxSize - minSize) * Math.random());
+						// If the difficulty is hard each circle have the minimum size
+						else
+							Radius[i] = minSize;
+
 						// We assign a random value to the position of each new circle inside the screen
 						Xcoordinates[i] = (int) (minSize + edge + ((width - maxSize - minSize - 2*edge + 100) * Math.random()));
 						Ycoordinates[i] = (int) (minSize + edge + ((height - maxSize - minSize - 2*edge + 100) * Math.random()));
 						System.out.println("x : " + Xcoordinates[i] + "  y : " + Ycoordinates[i]);
+
 						// New bounds for each new circle and its center
 						circleBounds[i].set(Xcoordinates[i], Ycoordinates[i], Radius[i]);
+
 						// New color for each circle
 						randomColor = (int) (colorList.length * Math.random());
 						RdmColorList[i] = colorList[randomColor];
 					}
-					// We reset the number click to display another bonus in 10 clicks
+					// We reset the number of click to display another bonus in 10 clicks
 					touchBonus = 0;
 				}
 				// If the circle was not a bonus
@@ -234,8 +298,17 @@ public class GameTimeMode extends ApplicationAdapter implements InputProcessor {
 					if (touch == CircleNumber){
 						// We say that we can change the color of the first circle now
 						bonus = true;
-						// New size of the circle
-						Radius[0] = (int) (minSize + (maxSize - minSize) * Math.random());
+
+						// If the difficulty is easy each circle must have the maximum size
+						if (Difficulty ==1)
+							Radius[0] = maxSize;
+							// If the difficulty is normal each circle have a random size
+						else if (Difficulty ==2)
+							Radius[0] = (int) (minSize + (maxSize - minSize) * Math.random());
+							// If the difficulty is hard each circle have the minimum size
+						else
+							Radius[0] = minSize;
+
 						// We assign a random value to the position of the new circle inside the screen
 						Xcoordinates[0] = (int) (minSize + edge + ((width - maxSize - minSize - 2 * edge + 100) * Math.random()));
 						Ycoordinates[0] = (int) (minSize + edge + ((height - maxSize - minSize - 2 * edge + 100) * Math.random()));
@@ -243,8 +316,6 @@ public class GameTimeMode extends ApplicationAdapter implements InputProcessor {
 						circleBounds[0].set(Xcoordinates[0], Ycoordinates[0], Radius[0]);
 					}
 					touch=0;
-
-					System.out.println("RANDOM");
 				}
 
 				// We change the color of the circle
