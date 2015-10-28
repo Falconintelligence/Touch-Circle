@@ -14,27 +14,28 @@ import com.badlogic.gdx.math.Circle;
 import com.badlogic.gdx.utils.TimeUtils;
 
 
-public class GameMode extends ApplicationAdapter implements InputProcessor {
-	ShapeRenderer shapeRenderer;
-	int height;
-	int width;
-	int touchCoordinateX, touchCoordinateY;
-	int edge = 200;
-	int minSize = 50;
-	int maxSize = 150;
-	int randomColor;
-	int CircleNumber = 5;
-	int touchBonus = 0, touch = 0;
-	boolean bonus = false;
-	boolean whiteBonus = false;
-	Color[] colorList, RdmColorList;
-	Circle[] circleBounds;
-	int[] Xcoordinates, Ycoordinates, Radius;
-	Sound pop;
-	BitmapFont shadow, font;
-	SpriteBatch batch;
-	int score = 0;
-	long startTime;
+public class GameTimeMode extends ApplicationAdapter implements InputProcessor {
+	ShapeRenderer shapeRenderer;					// Give the possibility to draw elements on the screen
+	int height, width;								// Height and Width of the screen
+	int touchCoordinateX, touchCoordinateY;			// Position of the user's finger on the screen
+	int edge = 200;									// Edge to give bounds for the zone where we display circles
+	int minSize = 50;								// Minimum size of the circle
+	int maxSize = 150;								// Maximum size of the circle
+	int randomColor;								// Number of the random color
+	int CircleNumber = 5;							// Number of circles to display when we touch the bonus
+	int touchBonus = 0;								// Number of time we touch the screen before displaying a bonus
+	int touch = 0;									// Number of circle touched after pressing the bonus circle
+	boolean bonus = false;							// Boolean which tells us if we have to press on circles displayed by the bonus circle in order to know when we have to change the color of the next circle
+	boolean whiteBonus = false;						// Boolean which tells us if it is a bonus circle or not
+	Color[] colorList, RdmColorList;				// List of the colors of the circles
+	Circle[] circleBounds;							// List of the bounds for the circle (to know if we click inside the circle)
+	int[] Xcoordinates, Ycoordinates, Radius;		// Parameters of the circles
+	Music pop;										// Sound effect when we click on a circle
+	Music background_music;                         // Background music for the game
+	BitmapFont font;								// Font of the text
+	SpriteBatch batch;								// SpriteBatch to display the text
+	int score = 0;									// Value of the score
+	long startTime;									// Start time of the game
 	
 	@Override
 	public void create () {
@@ -42,6 +43,7 @@ public class GameMode extends ApplicationAdapter implements InputProcessor {
 		batch = new SpriteBatch();
 		startTime = TimeUtils.millis();
 
+		// List of the colors of the circles
 		colorList = new Color[]{
 				Color.CYAN,
 				Color.GREEN,
@@ -49,12 +51,14 @@ public class GameMode extends ApplicationAdapter implements InputProcessor {
 				Color.MAGENTA,
 				Color.YELLOW
 		};
-		// We load our sound effect
-		pop = Gdx.audio.newSound(Gdx.files.internal("pop.mp3"));
+		// We load our sound effect and our background music
+		pop = Gdx.audio.newMusic(Gdx.files.internal("data/bubble_pop.wav"));
+		background_music = Gdx.audio.newMusic(Gdx.files.internal("data/background_sound.wav"));
 
 		font = new BitmapFont(Gdx.files.internal("data/text.fnt"));
 		//shadow = new BitmapFont(Gdx.files.internal("data/shadow.fnt"));
 
+		// We instantiate all the lists
 		Xcoordinates = new int[CircleNumber];
 		Ycoordinates = new int[CircleNumber];
 		Radius = new int[CircleNumber];
@@ -73,7 +77,7 @@ public class GameMode extends ApplicationAdapter implements InputProcessor {
 		// We fetch the size of the screen
 		height = Gdx.graphics.getHeight();
 		width = Gdx.graphics.getWidth();
-		System.out.println("height : " + height + "  width : " + width);
+		//System.out.println("height : " + height + "  width : " + width);
 
 		// Size of the first circle
 		Radius[0] = maxSize;
@@ -82,7 +86,10 @@ public class GameMode extends ApplicationAdapter implements InputProcessor {
 		Ycoordinates[0] = (int) (minSize + edge + ( (height - maxSize - minSize - 2*edge + 100) * Math.random() ) );
 		// We set the bounds of the circle and its center
 		circleBounds[0].set(Xcoordinates[0], Ycoordinates[0], Radius[0]);
-		System.out.println("x : " + Xcoordinates[0] + "  y : " + Ycoordinates[0]);
+
+		// We play the background music in a loop
+		background_music.play();
+		background_music.setLooping(true);
 
 		// We allow the screen to listen the finger of the user
 		Gdx.input.setInputProcessor(this);
@@ -100,7 +107,6 @@ public class GameMode extends ApplicationAdapter implements InputProcessor {
 		int time = (int) (TimeUtils.timeSinceMillis(startTime) / 1000);
 
 		batch.begin();
-		font.setColor(Color.ORANGE);
 		font.getData().setScale(1.15f, 1.15f);
 		// We choose a color for the text
 		font.setColor(Color.ORANGE);
@@ -137,6 +143,7 @@ public class GameMode extends ApplicationAdapter implements InputProcessor {
 				shapeRenderer.end();
 			}
 		}
+		// If the time is over
 		else {
 			// We disable the fact that we can click on the circles
 			for (int i = 0; i < Xcoordinates.length; i++) {
@@ -151,13 +158,11 @@ public class GameMode extends ApplicationAdapter implements InputProcessor {
 		}
 	}
 
-	// When the user touch the screen
 	@Override
 	public boolean keyDown(int keycode) {
 		return false;
 	}
 
-	// When the user remove his finger of the screen
 	@Override
 	public boolean keyUp(int keycode) {
 		return false;
@@ -168,21 +173,22 @@ public class GameMode extends ApplicationAdapter implements InputProcessor {
 		return false;
 	}
 
+	// When the user touch the screen
 	@Override
 	public boolean touchDown(int screenX, int screenY, int pointer, int button) {
 
 		// We fetch the position of the finger
 		touchCoordinateX = screenX;
 		touchCoordinateY = screenY;
-		System.out.println("X coordinate : " + touchCoordinateX + " Y coordinate : " + touchCoordinateY);
+		//System.out.println("X coordinate : " + touchCoordinateX + " Y coordinate : " + touchCoordinateY);
 
 		// We check if the player touched one of the circles displayed
 		for (int k=0; k<circleBounds.length; k++) {
 			// If the finger touch a circle we create a new circle
 			if (circleBounds[k].contains(touchCoordinateX, touchCoordinateY)) {
 				touchBonus++;
-				// we play a sound effect
-				pop.play(1.0f);
+				// we play a sound effect with the volume at the maximum
+				pop.play();
 
 				// If the circle was a bonus (White circle)
 				if (whiteBonus) {
@@ -284,6 +290,7 @@ public class GameMode extends ApplicationAdapter implements InputProcessor {
 	@Override
 	public void dispose(){
 		pop.dispose();
+		background_music.dispose();
 		shapeRenderer.dispose();
 		batch.dispose();
 		font.dispose();

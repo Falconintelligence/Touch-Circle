@@ -13,7 +13,7 @@ import com.badlogic.gdx.Gdx;
 /**
  * Created by Alban on 10/10/2015.
  */
-public class GameChoice extends Activity implements View.OnClickListener {
+public class GameChoice extends Activity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,16 +35,25 @@ public class GameChoice extends Activity implements View.OnClickListener {
 
         // Time mode
         Button TimeBtn = (Button)findViewById(R.id.Btn_time_mode);
-        TimeBtn.setOnClickListener(this);
+        TimeBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // We go to the Android Launcher
+                Intent intent = new Intent(GameChoice.this, AndroidLauncher.class);
+                intent.putExtra("choice", "time");
+                startActivity(intent);
+            }
+        });
 
         // Classic mode
         Button ClassicBtn = (Button)findViewById(R.id.Btn_classic_mode);
-        ClassicBtn.setOnClickListener(this);
-    }
-    // We go to the Android Launcher
-    @Override
-    public void onClick(View v) {
-        Intent intent = new Intent(GameChoice.this, AndroidLauncher.class);
-        startActivity(intent);
+        ClassicBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(GameChoice.this, AndroidLauncher.class);
+                intent.putExtra("choice", "classic");
+                startActivity(intent);
+            }
+        });
     }
 }
